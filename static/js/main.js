@@ -48,6 +48,10 @@ function init() {
     renderer.domElement.addEventListener('click', onObjectClick, false);
     console.log('Object selection event listener added');
 
+    // Add event listener for voice input button
+    document.getElementById('voice-input-btn').addEventListener('click', startVoiceInput);
+    console.log('Voice input button event listener added');
+
     console.log('Scene initialization complete');
     animate();
 }
@@ -215,6 +219,29 @@ function generateModel() {
     .catch((error) => {
         console.error('Error:', error);
     });
+}
+
+function startVoiceInput() {
+    if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('model-input').value = transcript;
+            generateModel();
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.start();
+    } else {
+        alert('Speech recognition is not supported in your browser.');
+    }
 }
 
 console.log('Setting up window.onload');
