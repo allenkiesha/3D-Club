@@ -49,8 +49,13 @@ function init() {
     console.log('Object selection event listener added');
 
     // Add event listener for voice input button
-    document.getElementById('voice-input-btn').addEventListener('click', startVoiceInput);
-    console.log('Voice input button event listener added');
+    const voiceInputBtn = document.getElementById('voice-input-btn');
+    if (voiceInputBtn) {
+        voiceInputBtn.addEventListener('click', startVoiceInput);
+        console.log('Voice input button event listener added');
+    } else {
+        console.error('Voice input button not found');
+    }
 
     console.log('Scene initialization complete');
     animate();
@@ -59,6 +64,7 @@ function init() {
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    console.log('Number of objects in scene:', scene.children.length);
 }
 
 function onWindowResize() {
@@ -98,6 +104,8 @@ function addShape(shapeType) {
         Math.random() * 4 - 2
     );
     scene.add(container);
+    console.log('Shape created:', mesh);
+    console.log('Shape added to scene');
     console.log(`Shape added: ${shapeType}`, container);
 }
 
