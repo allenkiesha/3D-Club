@@ -1,6 +1,6 @@
 console.log('main.js loaded');
 
-let scene, camera, renderer, controls;
+let scene, camera, renderer;
 let selectedObject = null;
 let originalColor = null;
 
@@ -28,19 +28,6 @@ function init() {
     scene.add(gridHelper);
     console.log('Grid helper added');
 
-    // Add orbit controls
-    console.log('THREE.OrbitControls available:', THREE.OrbitControls);
-    if (THREE.OrbitControls) {
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.screenSpacePanning = false;
-        controls.maxPolarAngle = Math.PI / 2;
-        console.log('OrbitControls initialized');
-    } else {
-        console.error('THREE.OrbitControls is not available');
-    }
-
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
@@ -60,23 +47,15 @@ function init() {
     renderer.domElement.addEventListener('click', onObjectClick, false);
     console.log('Object selection event listener added');
 
+    // Add mouse controls for camera rotation
+    addMouseControls();
+
     console.log('Scene initialization complete');
     animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    if (controls) {
-        controls.update();
-    }
-    // Log positions of objects in the scene
-    scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-            console.log(`Object position: ${object.position.x}, ${object.position.y}, ${object.position.z}`);
-        }
-    });
-    // Log camera position
-    console.log(`Camera position: ${camera.position.x}, ${camera.position.y}, ${camera.position.z}`);
     renderer.render(scene, camera);
 }
 
@@ -108,13 +87,16 @@ function addShape(shapeType) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x00aaff });  // Bright blue color
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(
+    
+    const container = new THREE.Object3D();
+    container.add(mesh);
+    container.position.set(
         Math.random() * 4 - 2,
         Math.random() * 4 - 2,
         Math.random() * 4 - 2
     );
-    scene.add(mesh);
-    console.log(`Shape added: ${shapeType}`, mesh);
+    scene.add(container);
+    console.log(`Shape added: ${shapeType}`, container);
 }
 
 function onObjectClick(event) {
@@ -128,26 +110,26 @@ function onObjectClick(event) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    const intersects = raycaster.intersectObjects(scene.children);
+    const intersects = raycaster.intersectObjects(scene.children, true);
     console.log("Intersects:", intersects);
 
     if (intersects.length > 0) {
         console.log("Object clicked:", intersects[0].object);
         if (selectedObject) {
             console.log("Resetting previous selected object color");
-            selectedObject.material.color.setHex(originalColor);
+            selectedObject.children[0].material.color.setHex(originalColor);
         }
-        selectedObject = intersects[0].object;
-        originalColor = selectedObject.material.color.getHex();
+        selectedObject = intersects[0].object.parent;
+        originalColor = selectedObject.children[0].material.color.getHex();
         console.log("Original color:", originalColor);
-        selectedObject.material.color.setHex(0xff0000); // Set selected object color to red
+        selectedObject.children[0].material.color.setHex(0xff0000); // Set selected object color to red
         console.log("New color: 0xff0000");
         updateSliders();
     } else {
         console.log("No object clicked");
         if (selectedObject) {
             console.log("Resetting selected object color");
-            selectedObject.material.color.setHex(originalColor);
+            selectedObject.children[0].material.color.setHex(originalColor);
         }
         selectedObject = null;
         updateSliders();
@@ -160,23 +142,35 @@ function updateSliders() {
     const positionY = document.getElementById('position-y');
     const positionZ = document.getElementById('position-z');
     const scale = document.getElementById('scale');
+    const rotationX = document.getElementById('rotation-x');
+    const rotationY = document.getElementById('rotation-y');
+    const rotationZ = document.getElementById('rotation-z');
 
     if (selectedObject) {
         positionX.value = selectedObject.position.x;
         positionY.value = selectedObject.position.y;
         positionZ.value = selectedObject.position.z;
         scale.value = selectedObject.scale.x;
+        rotationX.value = selectedObject.rotation.x;
+        rotationY.value = selectedObject.rotation.y;
+        rotationZ.value = selectedObject.rotation.z;
         console.log("Slider values updated:", {
             x: positionX.value,
             y: positionY.value,
             z: positionZ.value,
-            scale: scale.value
+            scale: scale.value,
+            rotationX: rotationX.value,
+            rotationY: rotationY.value,
+            rotationZ: rotationZ.value
         });
     } else {
         positionX.value = 0;
         positionY.value = 0;
         positionZ.value = 0;
         scale.value = 1;
+        rotationX.value = 0;
+        rotationY.value = 0;
+        rotationZ.value = 0;
         console.log("Sliders reset to default values");
     }
 }
@@ -196,6 +190,48 @@ function updateScale() {
         selectedObject.scale.set(scale, scale, scale);
         console.log("Object scale updated:", scale);
     }
+}
+
+function rotateSelectedShape(axis, angle) {
+    if (selectedObject) {
+        selectedObject.rotation[axis] += parseFloat(angle);
+        console.log(`Object rotated on ${axis}-axis by ${angle}`);
+    }
+}
+
+function addMouseControls() {
+    let isDragging = false;
+    let previousMousePosition = {
+        x: 0,
+        y: 0
+    };
+
+    renderer.domElement.addEventListener('mousedown', (e) => {
+        isDragging = true;
+    });
+
+    renderer.domElement.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const deltaMove = {
+                x: e.offsetX - previousMousePosition.x,
+                y: e.offsetY - previousMousePosition.y
+            };
+
+            if (!selectedObject) {
+                camera.position.x += deltaMove.x * 0.01;
+                camera.position.y -= deltaMove.y * 0.01;
+            }
+        }
+
+        previousMousePosition = {
+            x: e.offsetX,
+            y: e.offsetY
+        };
+    });
+
+    renderer.domElement.addEventListener('mouseup', (e) => {
+        isDragging = false;
+    });
 }
 
 console.log('Setting up window.onload');

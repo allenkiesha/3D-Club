@@ -29,9 +29,20 @@
             <label for="scale">Scale:</label>
             <input type="range" id="scale" class="slider" min="0.1" max="2" step="0.1" value="1" oninput="updateScale()">
         </div>
+        <div class="slider-container">
+            <label for="rotation-x">Rotation X:</label>
+            <input type="range" id="rotation-x" class="slider" min="-3.14" max="3.14" step="0.1" value="0" oninput="rotateSelectedShape('x', this.value - this.defaultValue)">
+        </div>
+        <div class="slider-container">
+            <label for="rotation-y">Rotation Y:</label>
+            <input type="range" id="rotation-y" class="slider" min="-3.14" max="3.14" step="0.1" value="0" oninput="rotateSelectedShape('y', this.value - this.defaultValue)">
+        </div>
+        <div class="slider-container">
+            <label for="rotation-z">Rotation Z:</label>
+            <input type="range" id="rotation-z" class="slider" min="-3.14" max="3.14" step="0.1" value="0" oninput="rotateSelectedShape('z', this.value - this.defaultValue)">
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r132/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r132/controls/OrbitControls.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
