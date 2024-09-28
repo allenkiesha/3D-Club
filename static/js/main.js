@@ -230,20 +230,46 @@ function generateModel() {
 }
 
 function startVoiceInput() {
+    const voiceStatus = document.getElementById('voice-status');
     if ('webkitSpeechRecognition' in window) {
         const recognition = new webkitSpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = 'en-US';
 
+        recognition.onstart = function() {
+            voiceStatus.textContent = 'Listening...';
+        };
+
         recognition.onresult = function(event) {
             const transcript = event.results[0][0].transcript;
             document.getElementById('model-input').value = transcript;
             generateModel();
+            voiceStatus.textContent = '';
         };
 
         recognition.onerror = function(event) {
             console.error('Speech recognition error:', event.error);
+            switch(event.error) {
+                case 'network':
+                    voiceStatus.textContent = 'Network error. Please check your internet connection.';
+                    break;
+                case 'not-allowed':
+                case 'service-not-allowed':
+                    voiceStatus.textContent = 'Microphone access denied. Please allow microphone access and try again.';
+                    break;
+                case 'aborted':
+                    voiceStatus.textContent = 'Speech input was aborted. Please try again.';
+                    break;
+                default:
+                    voiceStatus.textContent = 'An error occurred. Please try again.';
+            }
+        };
+
+        recognition.onend = function() {
+            if (voiceStatus.textContent === 'Listening...') {
+                voiceStatus.textContent = '';
+            }
         };
 
         recognition.start();
