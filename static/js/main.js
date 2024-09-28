@@ -9,7 +9,7 @@ function init() {
     
     // Create scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x333333);  // Dark grey color
+    scene.background = new THREE.Color(0xf0f0f0);  // Light grey color
     console.log('Scene created');
 
     // Create camera
@@ -24,13 +24,17 @@ function init() {
     console.log('Renderer created and added to DOM');
 
     // Add orbit controls
-    console.log('Initializing OrbitControls...');
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.screenSpacePanning = false;
-    controls.maxPolarAngle = Math.PI / 2;
-    console.log('OrbitControls added and configured');
+    console.log('THREE.OrbitControls available:', THREE.OrbitControls);
+    if (THREE.OrbitControls) {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.screenSpacePanning = false;
+        controls.maxPolarAngle = Math.PI / 2;
+        console.log('OrbitControls initialized');
+    } else {
+        console.error('THREE.OrbitControls is not available');
+    }
 
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -57,7 +61,9 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-    controls.update();
+    if (controls) {
+        controls.update();
+    }
     renderer.render(scene, camera);
 }
 
@@ -87,7 +93,7 @@ function addShape(shapeType) {
             break;
     }
 
-    material = new THREE.MeshPhongMaterial({ color: 0x87CEEB });  // Light blue color
+    material = new THREE.MeshPhongMaterial({ color: 0x00aaff });  // Bright blue color
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(
         Math.random() * 4 - 2,
