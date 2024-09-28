@@ -3,6 +3,7 @@ let selectedObject = null;
 let originalColor = null;
 
 function init() {
+    console.log("Initializing scene");
     // Create scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
@@ -34,6 +35,7 @@ function init() {
     // Add event listener for object selection
     renderer.domElement.addEventListener('click', onObjectClick, false);
 
+    console.log("Scene initialized");
     animate();
 }
 
@@ -50,6 +52,7 @@ function onWindowResize() {
 }
 
 function addShape(shapeType) {
+    console.log(`Adding shape: ${shapeType}`);
     let geometry, material, mesh;
 
     switch (shapeType) {
@@ -75,9 +78,11 @@ function addShape(shapeType) {
         Math.random() * 4 - 2
     );
     scene.add(mesh);
+    console.log(`Shape added: ${shapeType}`, mesh);
 }
 
 function onObjectClick(event) {
+    console.log("Click event detected");
     event.preventDefault();
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -88,17 +93,24 @@ function onObjectClick(event) {
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(scene.children);
+    console.log("Intersects:", intersects);
 
     if (intersects.length > 0) {
+        console.log("Object clicked:", intersects[0].object);
         if (selectedObject) {
+            console.log("Resetting previous selected object color");
             selectedObject.material.color.setHex(originalColor);
         }
         selectedObject = intersects[0].object;
         originalColor = selectedObject.material.color.getHex();
+        console.log("Original color:", originalColor);
         selectedObject.material.color.setHex(0xff0000); // Set selected object color to red
+        console.log("New color: 0xff0000");
         updateSliders();
     } else {
+        console.log("No object clicked");
         if (selectedObject) {
+            console.log("Resetting selected object color");
             selectedObject.material.color.setHex(originalColor);
         }
         selectedObject = null;
@@ -107,6 +119,7 @@ function onObjectClick(event) {
 }
 
 function updateSliders() {
+    console.log("Updating sliders");
     const positionX = document.getElementById('position-x');
     const positionY = document.getElementById('position-y');
     const positionZ = document.getElementById('position-z');
@@ -117,11 +130,18 @@ function updateSliders() {
         positionY.value = selectedObject.position.y;
         positionZ.value = selectedObject.position.z;
         scale.value = selectedObject.scale.x;
+        console.log("Slider values updated:", {
+            x: positionX.value,
+            y: positionY.value,
+            z: positionZ.value,
+            scale: scale.value
+        });
     } else {
         positionX.value = 0;
         positionY.value = 0;
         positionZ.value = 0;
         scale.value = 1;
+        console.log("Sliders reset to default values");
     }
 }
 
@@ -130,6 +150,7 @@ function updatePosition() {
         selectedObject.position.x = parseFloat(document.getElementById('position-x').value);
         selectedObject.position.y = parseFloat(document.getElementById('position-y').value);
         selectedObject.position.z = parseFloat(document.getElementById('position-z').value);
+        console.log("Object position updated:", selectedObject.position);
     }
 }
 
@@ -137,6 +158,7 @@ function updateScale() {
     if (selectedObject) {
         const scale = parseFloat(document.getElementById('scale').value);
         selectedObject.scale.set(scale, scale, scale);
+        console.log("Object scale updated:", scale);
     }
 }
 
