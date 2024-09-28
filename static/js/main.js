@@ -191,6 +191,32 @@ function rotateSelectedShape(axis, angle) {
     }
 }
 
+function generateModel() {
+    const modelInput = document.getElementById('model-input').value;
+    console.log("Generating model from input:", modelInput);
+
+    // Send the model input to the server
+    fetch('/generate_model', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ input: modelInput }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server response:", data);
+        if (data.shape) {
+            addShape(data.shape);
+        } else {
+            console.error("Invalid shape received from server");
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
 console.log('Setting up window.onload');
 window.onload = init;
 console.log('main.js execution completed');
