@@ -5,51 +5,64 @@ let selectedObject = null;
 let originalColor = null;
 
 function init() {
-    console.log('init function called');
+    console.log('Initializing 3D scene...');
+    
     // Create scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x333333);  // Dark grey color
+    console.log('Scene created');
 
     // Create camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
+    console.log('Camera created');
 
     // Create renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
-    console.log('Renderer added to DOM');
+    console.log('Renderer created and added to DOM');
 
     // Add orbit controls
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.screenSpacePanning = false;
-    controls.maxPolarAngle = Math.PI / 2;
-    console.log('OrbitControls added and configured');
+    try {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.screenSpacePanning = false;
+        controls.maxPolarAngle = Math.PI / 2;
+        console.log('OrbitControls added and configured');
+    } catch (error) {
+        console.error('Error initializing OrbitControls:', error);
+    }
 
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
+    console.log('Ambient light added');
 
     // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
+    console.log('Directional light added');
 
     // Add event listener for window resize
     window.addEventListener('resize', onWindowResize, false);
+    console.log('Window resize event listener added');
 
     // Add event listener for object selection
     renderer.domElement.addEventListener('click', onObjectClick, false);
+    console.log('Object selection event listener added');
 
-    console.log('Scene initialized');
+    console.log('Scene initialization complete');
     animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    controls.update();
+    if (controls) {
+        controls.update();
+    }
     renderer.render(scene, camera);
 }
 
@@ -57,6 +70,7 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / (window.innerHeight * 0.8);
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+    console.log('Window resized');
 }
 
 function addShape(shapeType) {
