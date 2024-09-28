@@ -6,7 +6,7 @@ function init() {
     console.log("Initializing scene");
     // Create scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+    scene.background = new THREE.Color(0x333333);  // Dark grey color
 
     // Create camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -70,7 +70,7 @@ function addShape(shapeType) {
             break;
     }
 
-    material = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff });
+    material = new THREE.MeshPhongMaterial({ color: 0x87CEEB });  // Light blue color
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(
         Math.random() * 4 - 2,
