@@ -1,9 +1,11 @@
+console.log('main.js loaded');
+
 let scene, camera, renderer, controls;
 let selectedObject = null;
 let originalColor = null;
 
 function init() {
-    console.log("Initializing scene");
+    console.log('init function called');
     // Create scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x333333);  // Dark grey color
@@ -16,9 +18,15 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
+    console.log('Renderer added to DOM');
 
     // Add orbit controls
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    if (THREE.OrbitControls) {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        console.log('OrbitControls added');
+    } else {
+        console.error('THREE.OrbitControls is not available');
+    }
 
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -35,13 +43,13 @@ function init() {
     // Add event listener for object selection
     renderer.domElement.addEventListener('click', onObjectClick, false);
 
-    console.log("Scene initialized");
+    console.log('Scene initialized');
     animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    controls.update();
+    if (controls) controls.update();
     renderer.render(scene, camera);
 }
 
@@ -162,4 +170,6 @@ function updateScale() {
     }
 }
 
+console.log('Setting up window.onload');
 window.onload = init;
+console.log('main.js execution completed');
