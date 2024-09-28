@@ -12,10 +12,11 @@ function init() {
     scene.background = new THREE.Color(0x333333);  // Dark grey color
     console.log('Scene created');
 
-    // Create camera
+    // Create camera with fixed position
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
-    console.log('Camera created');
+    camera.position.set(0, 5, 10);
+    camera.lookAt(0, 0, 0);
+    console.log('Camera created and positioned');
 
     // Create renderer
     renderer = new THREE.WebGLRenderer();
@@ -46,9 +47,6 @@ function init() {
     // Add event listener for object selection
     renderer.domElement.addEventListener('click', onObjectClick, false);
     console.log('Object selection event listener added');
-
-    // Add mouse controls for camera rotation
-    addMouseControls();
 
     console.log('Scene initialization complete');
     animate();
@@ -122,8 +120,8 @@ function onObjectClick(event) {
         selectedObject = intersects[0].object.parent;
         originalColor = selectedObject.children[0].material.color.getHex();
         console.log("Original color:", originalColor);
-        selectedObject.children[0].material.color.setHex(0xff0000); // Set selected object color to red
-        console.log("New color: 0xff0000");
+        selectedObject.children[0].material.color.setHex(0xFF69B4); // Hot pink color
+        console.log("New color: 0xFF69B4");
         updateSliders();
     } else {
         console.log("No object clicked");
@@ -197,41 +195,6 @@ function rotateSelectedShape(axis, angle) {
         selectedObject.rotation[axis] += parseFloat(angle);
         console.log(`Object rotated on ${axis}-axis by ${angle}`);
     }
-}
-
-function addMouseControls() {
-    let isDragging = false;
-    let previousMousePosition = {
-        x: 0,
-        y: 0
-    };
-
-    renderer.domElement.addEventListener('mousedown', (e) => {
-        isDragging = true;
-    });
-
-    renderer.domElement.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const deltaMove = {
-                x: e.offsetX - previousMousePosition.x,
-                y: e.offsetY - previousMousePosition.y
-            };
-
-            if (!selectedObject) {
-                camera.position.x += deltaMove.x * 0.01;
-                camera.position.y -= deltaMove.y * 0.01;
-            }
-        }
-
-        previousMousePosition = {
-            x: e.offsetX,
-            y: e.offsetY
-        };
-    });
-
-    renderer.domElement.addEventListener('mouseup', (e) => {
-        isDragging = false;
-    });
 }
 
 console.log('Setting up window.onload');
