@@ -24,6 +24,7 @@ function init() {
     console.log('Renderer created and added to DOM');
 
     // Add orbit controls
+    console.log('Initializing OrbitControls...');
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
