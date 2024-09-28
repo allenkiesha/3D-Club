@@ -69,6 +69,14 @@ function animate() {
     if (controls) {
         controls.update();
     }
+    // Log positions of objects in the scene
+    scene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+            console.log(`Object position: ${object.position.x}, ${object.position.y}, ${object.position.z}`);
+        }
+    });
+    // Log camera position
+    console.log(`Camera position: ${camera.position.x}, ${camera.position.y}, ${camera.position.z}`);
     renderer.render(scene, camera);
 }
 
