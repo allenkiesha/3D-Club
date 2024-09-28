@@ -24,8 +24,8 @@ function init() {
     document.getElementById('canvas-container').appendChild(renderer.domElement);
     console.log('Renderer created and added to DOM');
 
-    // Add grid helper
-    const gridHelper = new THREE.GridHelper(10, 10);
+    // Add grid helper with white color
+    const gridHelper = new THREE.GridHelper(10, 10, 0xffffff, 0xffffff);
     scene.add(gridHelper);
     console.log('Grid helper added');
 
@@ -83,7 +83,7 @@ function addShape(shapeType) {
             break;
     }
 
-    material = new THREE.MeshPhongMaterial({ color: 0x00aaff });  // Bright blue color
+    material = new THREE.MeshPhongMaterial({ color: 0x00aaff });  // Blue color
     mesh = new THREE.Mesh(geometry, material);
     
     const container = new THREE.Object3D();
@@ -136,8 +136,6 @@ function onObjectClick(event) {
 
 function updateSliders() {
     console.log("Updating sliders");
-    const positionX = document.getElementById('position-x');
-    const positionY = document.getElementById('position-y');
     const positionZ = document.getElementById('position-z');
     const scale = document.getElementById('scale');
     const rotationX = document.getElementById('rotation-x');
@@ -145,16 +143,12 @@ function updateSliders() {
     const rotationZ = document.getElementById('rotation-z');
 
     if (selectedObject) {
-        positionX.value = selectedObject.position.x;
-        positionY.value = selectedObject.position.y;
         positionZ.value = selectedObject.position.z;
         scale.value = selectedObject.scale.x;
         rotationX.value = selectedObject.rotation.x;
         rotationY.value = selectedObject.rotation.y;
         rotationZ.value = selectedObject.rotation.z;
         console.log("Slider values updated:", {
-            x: positionX.value,
-            y: positionY.value,
             z: positionZ.value,
             scale: scale.value,
             rotationX: rotationX.value,
@@ -162,8 +156,6 @@ function updateSliders() {
             rotationZ: rotationZ.value
         });
     } else {
-        positionX.value = 0;
-        positionY.value = 0;
         positionZ.value = 0;
         scale.value = 1;
         rotationX.value = 0;
@@ -175,8 +167,6 @@ function updateSliders() {
 
 function updatePosition() {
     if (selectedObject) {
-        selectedObject.position.x = parseFloat(document.getElementById('position-x').value);
-        selectedObject.position.y = parseFloat(document.getElementById('position-y').value);
         selectedObject.position.z = parseFloat(document.getElementById('position-z').value);
         console.log("Object position updated:", selectedObject.position);
     }
