@@ -9,7 +9,7 @@ function init() {
     
     // Create scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);  // Light grey color
+    scene.background = new THREE.Color(0x333333);  // Dark grey color
     console.log('Scene created');
 
     // Create camera
@@ -22,6 +22,11 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
     console.log('Renderer created and added to DOM');
+
+    // Add grid helper
+    const gridHelper = new THREE.GridHelper(10, 10);
+    scene.add(gridHelper);
+    console.log('Grid helper added');
 
     // Add orbit controls
     console.log('THREE.OrbitControls available:', THREE.OrbitControls);
