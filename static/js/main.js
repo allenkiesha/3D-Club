@@ -21,12 +21,12 @@ function init() {
     console.log('Renderer added to DOM');
 
     // Add orbit controls
-    if (THREE.OrbitControls) {
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        console.log('OrbitControls added');
-    } else {
-        console.error('THREE.OrbitControls is not available');
-    }
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.screenSpacePanning = false;
+    controls.maxPolarAngle = Math.PI / 2;
+    console.log('OrbitControls added and configured');
 
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -49,7 +49,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-    if (controls) controls.update();
+    controls.update();
     renderer.render(scene, camera);
 }
 
