@@ -111,13 +111,17 @@ function onObjectClick(event) {
     const intersects = raycaster.intersectObjects(scene.children, true);
     console.log("Intersects:", intersects);
 
-    if (intersects.length > 0) {
-        console.log("Object clicked:", intersects[0].object);
+    // Filter out the grid from intersects
+    const filteredIntersects = intersects.filter(intersect => !(intersect.object instanceof THREE.GridHelper));
+    
+    // Use filteredIntersects instead of intersects for the rest of the function
+    if (filteredIntersects.length > 0) {
+        console.log("Object clicked:", filteredIntersects[0].object);
         if (selectedObject) {
             console.log("Resetting previous selected object color");
             selectedObject.children[0].material.color.setHex(originalColor);
         }
-        selectedObject = intersects[0].object.parent;
+        selectedObject = filteredIntersects[0].object.parent;
         originalColor = selectedObject.children[0].material.color.getHex();
         console.log("Original color:", originalColor);
         selectedObject.children[0].material.color.setHex(0xFF69B4); // Hot pink color
