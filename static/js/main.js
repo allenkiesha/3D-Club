@@ -1,5 +1,6 @@
 let scene, camera, renderer, controls;
 let selectedObject = null;
+let originalColor = null;
 
 function init() {
     // Create scene
@@ -77,6 +78,7 @@ function addShape(shapeType) {
 }
 
 function onObjectClick(event) {
+    event.preventDefault();
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -88,9 +90,17 @@ function onObjectClick(event) {
     const intersects = raycaster.intersectObjects(scene.children);
 
     if (intersects.length > 0) {
+        if (selectedObject) {
+            selectedObject.material.color.setHex(originalColor);
+        }
         selectedObject = intersects[0].object;
+        originalColor = selectedObject.material.color.getHex();
+        selectedObject.material.color.setHex(0xff0000); // Set selected object color to red
         updateSliders();
     } else {
+        if (selectedObject) {
+            selectedObject.material.color.setHex(originalColor);
+        }
         selectedObject = null;
         updateSliders();
     }
